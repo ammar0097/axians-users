@@ -1,5 +1,6 @@
 const express = require('express');
 const userRoutes = require('./routes/userRoutes')
+const authRoutes = require('./routes/authRoutes')
 const app = express();
 const db = require('./models');
 // body parser qs
@@ -8,6 +9,8 @@ app.use(express.urlencoded({extended:true}));
 app.use(express.json());
 
 app.use('/',userRoutes);
+app.use('/',authRoutes);
+
 
 //db connection
 db.sequelize.sync().then(()=>{
