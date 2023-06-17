@@ -4,10 +4,7 @@ const bcrypt = require("bcrypt");
 exports.createUser = async (req, res) => {
   try {
     const password = req.body.password;
-    // Generate a salt to be used for hashing the password
     const salt = await bcrypt.genSalt(10);
-
-    // Hash the password using the generated salt
     const hashedPassword = await bcrypt.hash(password, salt);
 
     const user = await db.User.create({
@@ -17,20 +14,30 @@ exports.createUser = async (req, res) => {
       email: req.body.email,
       password: hashedPassword,
       isActive: req.body.isActive,
-      isAdmin: req.body.isAdmin
+      isAdmin: req.body.isAdmin,
     });
-    return res.status(200).send(user);
+    return res.status(200).json({
+      data: user,
+      message: "User created successfully",
+    });
   } catch (error) {
-    return res.status(400).send(error);
+    return res.status(500).json({ message: "Internal server error" });
   }
 };
 
 exports.getAllUsers = async (req, res) => {
-  const users = await db.User.findAll();
-  if (!users) {
-    return res.status(500).send("No users found!");
+  try {
+    const users = await db.User.findAll();
+    if (!users) {
+      return res.status(404).json({ message: "No users found" });
+    }
+    return res.status(200).json({
+      data: users,
+      message: "Users fetched successfully",
+    });
+  } catch (error) {
+    return res.status(500).json({ message: "Internal server error" });
   }
-  return res.status(200).send(users);
 };
 
 exports.getUserById = async (req, res) => {
@@ -38,11 +45,14 @@ exports.getUserById = async (req, res) => {
     const user = await db.User.findOne({ where: { id: req.params.id } });
 
     if (!user) {
-      res.status(404).send("User not found");
+      return res.status(404).json({ message: "User not found" });
     }
-    return res.status(200).send(user);
+    return res.status(200).json({
+      data: user,
+      message: "User fetched successfully",
+    });
   } catch (error) {
-    return res.status(500).send(error);
+    return res.status(500).json({ message: "Internal server error" });
   }
 };
 
@@ -51,7 +61,7 @@ exports.updateUser = async (req, res) => {
   try {
     const user = await db.User.findByPk(id_params);
     if (!user) {
-      res.status(404).send("user not found");
+      return res.status(404).json({ message: "User not found" });
     }
 
     await db.User.update(
@@ -62,7 +72,7 @@ exports.updateUser = async (req, res) => {
         email: req.body.email,
         password: req.body.password,
         isActive: req.body.isActive,
-        isAdmin: req.body.isAdmin
+        isAdmin: req.body.isAdmin,
       },
       {
         where: {
@@ -71,9 +81,11 @@ exports.updateUser = async (req, res) => {
       }
     );
 
-    return res.status(200).send("user updated");
+    return res.status(200).json({
+      message: "User updated successfully",
+    });
   } catch (error) {
-    return res.status(500).send(error);
+    return res.status(500).json({ message: "Internal server error" });
   }
 };
 
@@ -82,11 +94,11 @@ exports.deleteUser = async (req, res) => {
     const id_param = req.params.id;
     const user = await db.User.findByPk(id_param);
     if (!user) {
-      return res.status(404).send("user not found");
+      return res.status(404).json({ message: "User not found" });
     }
     await db.User.destroy({ where: { id: id_param } });
-    return res.status(200).send("user deleted");
+    return res.status(200).json({ message: "User deleted successfully" });
   } catch (error) {
-    return res.status(500).send(error);
+    return res.status(500).json({ message: "Internal server error" });
   }
 };

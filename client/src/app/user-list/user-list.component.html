@@ -1,0 +1,29 @@
+<div class="container">
+
+<table class="table table-user-list align-middle mb-0 bg-white">
+  <thead>
+    <tr>
+      <th scope="col">Nom</th>
+      <th scope="col">Prénom</th>
+      <th scope="col">Email</th>
+      <th scope="col">createdAt</th>
+      <th scope="col">updatedAt</th>
+      <th scope="col">Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let user of users">
+      <td>{{ user.username }}</td>
+      <td>{{ user.lastName }}</td>
+      <td>{{ user.firstName }}</td>
+      <td>{{ user.createdAt | date }}</td>
+      <td>{{ user.updatedAt | date}}</td>
+      <td>
+        <button type="button" class="btn btn-warning ()">Modifier</button
+        ><button type="button" class="btn btn-danger">Supprimer</button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<button type="button" class="btn btn-primary">Ajouter</button>
+</div>  

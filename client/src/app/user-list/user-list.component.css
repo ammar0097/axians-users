@@ -1,0 +1,7 @@
+.table-user-list {
+  margin-top: 70px;
+  margin-left: auto;
+  margin-right: auto;
+  box-shadow:  18px 18px 100px #ebebeb,
+  -18px -18px 100px #ffffff;
+}
