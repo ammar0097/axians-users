@@ -1,0 +1,25 @@
+<div class="login-form container">
+    <div class="row justify-content-center">
+      <div class="col-lg-6 col-md-8">
+        <div class="card">
+          <div class="card-body">
+            <h2 class="card-title">Change a new password</h2>
+            <form [formGroup]="myForm" (ngSubmit)="onSubmit()" >
+           
+              <div class="mb-3">
+                <div class="form-group">
+                  <label for="password">Password:</label>
+                  <input type="password" id="password" class="form-control" formControlName="password">      
+                </div>
+              </div>
+              <button  type="submit" class="btn btn-primary">Submit  <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span></button>
+              <div *ngIf="errorMessage" class="alert alert-danger mt-3" role="alert">
+               {{errorMessage}}
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  

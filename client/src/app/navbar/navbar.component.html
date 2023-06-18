@@ -18,6 +18,9 @@
           </li>
         </ul>
         <ul class="navbar-nav ms-auto"> <!-- Add 'ms-auto' class to align items to the right -->
+            <span style="margin-right: 10px; font-weight: 700;" *ngIf="currentUser" class="navbar-text mr-5">
+              {{ currentUser.username}}
+            </span>
           <li class="nav-item">
             <button class="btn btn-outline-danger logout" (click)="logout()">Logout</button>
           </li>

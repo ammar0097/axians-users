@@ -5,6 +5,7 @@ const requireLogin = require('../middleware/requireLogin');
 
 router.post('/login',authController.login);
 router.get('/current',requireLogin,authController.currentUser);
+router.put('/newpass',requireLogin,authController.newpass);
 
 
 module.exports = router;

@@ -11,7 +11,6 @@ const requireLogin = async (req, res, next) => {
   
   try {
     const decode = await jwt.verify(tokenValue, "testaxiansjwtjwt");
-    console.log(decode);
     req.userId = decode.userId;
     req.isAdmin = decode.isAdmin;
     next();

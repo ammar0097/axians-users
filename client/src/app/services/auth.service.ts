@@ -6,7 +6,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 @Injectable()
 export class AuthenticationService {
   constructor(private http: HttpClient) { }
-  urlApi = "http://localhost:3000"
+  private urlApi = "http://localhost:3000"
   private currentUserSubject: BehaviorSubject<any> = new BehaviorSubject(null);
   currentUser$: Observable<any> = this.currentUserSubject.asObservable();
 
@@ -38,5 +38,17 @@ export class AuthenticationService {
     // remove user from local storage to log user out
     localStorage.removeItem('jwtToken');
     this.currentUserSubject.next(null); // Clear the current user
+  }
+
+  loggedIn() {
+    let token = localStorage.getItem('jwtToken');
+    return (!!token)
+  }
+  updatePassword(passoword:any){
+    return this.http.put<any>(`${this.urlApi}/newpass`,{password:passoword}).pipe(
+      map((response) => {
+        return response.result;
+      })
+    );
   }
 }

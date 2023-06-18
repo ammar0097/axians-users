@@ -12,7 +12,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 export class LoginComponent implements OnInit {
   loading = false;
   myForm:any
-  error_msg=''
+  errorMessage=''
 
   constructor(private formBuilder : FormBuilder, private authService:AuthenticationService,private router: Router,) {
     this.myForm = this.formBuilder.group({
@@ -35,7 +35,7 @@ export class LoginComponent implements OnInit {
         this.router.navigate(['/']);
       },
       (error) => {
-        this.error_msg = error.error.message
+        this.errorMessage = error.error.message
         this.loading = false;
       }
     );

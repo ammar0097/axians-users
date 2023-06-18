@@ -59,7 +59,6 @@
                   <li class="msg_error" *ngIf="userForm.controls['password'].hasError('minlength')">Password length must be 12 or more.</li>
                   <li class="msg_error" *ngIf="userForm.controls['password'].hasError('maxlength')">Password length must be 20 or less.</li>
                   <li class="msg_error" *ngIf="userForm.controls['password'].hasError('pattern')">Invalid password.</li>
-
                 </ul>
               </div>
             </div>
@@ -119,13 +118,161 @@
             </button>
           </div>
         </div>
+        <div *ngIf="errorMessage" class="row">
+          <div class="col">
+            <div class="alert alert-danger" role="alert">
+              {{errorMessage}}
+            </div>
+            
+          </div>
+        </div>
       </form>
     </div>
   </ng-template>
   
+  <!-- Edit user Modal -->
+  <ng-template #edituser>
+    <div class="modal-header">
+      <h4 class="modal-title pull-left">Edit User</h4>
+      <button type="button" class="btn-close close pull-right" aria-label="Close" (click)="modalRef?.hide()">
+        <span aria-hidden="true" class="visually-hidden">&times;</span>
+      </button>
+    </div>
+    <div *ngIf="userToEdit" class="modal-body">
+      <form [formGroup]="editUserForm" (ngSubmit)="editUser(userToEdit.id)">
+        <div class="row">
+          <div class="col">
+            <div class="form-group">
+              <label for="username">Username:</label>
+              <input type="text" class="form-control" id="username" formControlName="username">
+              <div *ngIf="editUserForm.controls['username'].errors && editUserForm.controls['username'].touched"  >
+                <ul>
+                  <li class="msg_error" *ngIf="editUserForm.controls['username'].hasError('required')">Username is required.</li>
+                  <li class="msg_error" *ngIf="editUserForm.controls['username'].hasError('pattern')">Username must be alphanumeric.</li>
+                </ul>
+              </div>
+              
+              
+              
+            </div>
+          </div>
+          <div class="col">
+            <div class="form-group">
+              <label for="firstName">First Name:</label>
+              <input type="text" class="form-control" id="firstName" formControlName="firstName" required>
+              <div *ngIf="editUserForm.controls['firstName'].errors && editUserForm.controls['firstName'].touched"  >
+                <ul>
+                  <li class="msg_error" *ngIf="editUserForm.controls['firstName'].hasError('required')">First Name is required.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+  
+        <div class="row">
+          <div class="col">
+            <div class="form-group">
+              <label for="lastName">Last Name:</label>
+              <input type="text" class="form-control" id="lastName" formControlName="lastName" required>
+              <div *ngIf="editUserForm.controls['lastName'].errors && editUserForm.controls['lastName'].touched"  >
+                <ul>
+                  <li class="msg_error" *ngIf="editUserForm.controls['lastName'].hasError('required')">Last Name is required.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="form-group">
+              <label for="password">Password:</label>
+              <input type="password" class="form-control" id="password" formControlName="password" >
+              <div *ngIf="editUserForm.controls['password'].errors && editUserForm.controls['password'].touched"  >
+                <ul>
+                  <li class="msg_error" *ngIf="editUserForm.controls['password'].hasError('passwordLength')">Password length must be between 12 and 20.</li>
+                  <li class="msg_error" *ngIf="editUserForm.controls['password'].hasError('pattern')">Invalid password.</li>
+                </ul>
+              </div>
+              <div *ngIf=" editUserForm.controls['password'].value.trim() == ''  "  >
+                <ul>
+                  <li style="font-size: smaller;">User password will not be changed.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+  
+        <div class="row">
+          <div class="col">
+            <div class="form-group">
+              <label for="email">Email:</label>
+              <input type="email" class="form-control" id="email" formControlName="email" required>
+              <div *ngIf="editUserForm.controls['email'].errors && editUserForm.controls['email'].touched"  >
+                <ul>
+                  <li class="msg_error" *ngIf="editUserForm.controls['email'].hasError('required')">Email is required.</li>
+                  <li class="msg_error" *ngIf="editUserForm.controls['email'].hasError('email')">Invalid Email.</li>
+        
+
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="form-group">
+              <label for="isAdmin">Role:</label>
+              <select class="form-control" id="isAdmin" formControlName="isAdmin" required>
+                <option  value="1">Admin</option>
+                <option selected value="0">User</option>
+              </select>
+            </div>
+          </div>
+        </div>
+  
+        <div class="row">
+          <div class="col">
+            <div class="form-group">
+              <label for="isActive">Is Active:</label>
+              <select class="form-control" id="isActive" formControlName="isActive" required>
+                <option selected value="1">Active</option>
+                <option value="0">Disabled</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="col d-flex align-items-center">
+            <div class="form-group">
+              <label id="isnew" for="isNew">Ask to change password:</label>
+              <input checked type="checkbox" id="isNew" formControlName="isNew">
+            </div>
+          </div>
+        </div>
+  
+        <div class="row">
+          <div class="col">
+            <button [disabled]="editUserForm.invalid"  type="submit" class="btn btn-primary createuser">
+              Edit User
+              <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+            </button>
+          </div>
+        </div>
+        <div *ngIf="errorMessage" class="row">
+          <div class="col">
+            <div class="alert alert-danger" role="alert">
+              {{errorMessage}}
+            </div>
+            
+          </div>
+        </div>
+      </form>
+    </div>
+  </ng-template>
+  
+
+
+
+    <!-- Users list -->
   
   <button
     type="button"
+    *ngIf="currentUser && currentUser.isAdmin"
     (click)="openModal(createuser)"
     class="btn btn-primary float-right btn-create"
     style="float: right;margin-bottom: 10px"
@@ -143,13 +290,13 @@
         <th scope="col">Email</th>
         <th scope="col">createdAt</th>
         <th scope="col">updatedAt</th>
-        <th  scope="col">Action</th>
+        <th *ngIf="currentUser && currentUser.isAdmin" scope="col">Action</th>
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let user of users">
         <td *ngIf="user.isActive"><span class="badge rounded-pill text-bg-success">Active</span></td>
-        <td *ngIf="!user.isActive"><span class="badge rounded-pill text-bg-danger">Inactive</span></td>
+        <td *ngIf="!user.isActive"><span class="badge rounded-pill text-bg-danger">Disabled</span></td>
         <td>{{ user.username }}</td>
         <td>{{ user.firstName }}</td>
         <td>{{ user.lastName }}</td>
@@ -157,7 +304,7 @@
         <td>{{ user.createdAt | date }}</td>
         <td>{{ user.updatedAt | date }}</td>
         <td *ngIf="currentUser && currentUser.isAdmin">
-          <button type="button" class="btn btn-warning">Edit</button
+          <button (click)="openModal(edituser,user)" type="button" class="btn btn-warning">Edit</button
           ><button *ngIf="!user.isAdmin"
             type="button" class="btn btn-danger" (click)="delete(user.id)">Delete
           </button>

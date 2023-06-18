@@ -8,19 +8,7 @@ import { map } from 'rxjs/operators';
 export class UserServiceService {
   constructor(private http: HttpClient) {}
 
-  urlApi = "http://localhost:3000/"
-
-
-  /*
-  currentUser() {
-    return this.http.get<any>(`${this.urlApi}/users`).pipe(
-      map((response) => {
-        return response.result;
-      })
-    );
-  }
-
-  */
+  private urlApi = "http://localhost:3000/"
 
   createUser(data:any){
     return this.http.post<any>(`${this.urlApi}users`,data).pipe(
@@ -31,6 +19,8 @@ export class UserServiceService {
   }
 
   updateUser(id:number,data:any){
+    console.log(data);
+    
     return this.http.put<any>(`${this.urlApi}users/${id}`,data).pipe(
       map((response) => {
         return response.result;
@@ -61,4 +51,5 @@ export class UserServiceService {
       })
     );
   }
+ 
 }

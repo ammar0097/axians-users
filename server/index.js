@@ -1,6 +1,8 @@
 const express = require('express');
 const userRoutes = require('./routes/userRoutes')
 const authRoutes = require('./routes/authRoutes')
+const dashboardRoutes = require('./routes/dashboardRoutes')
+
 const app = express();
 const db = require('./models');
 
@@ -15,6 +17,8 @@ app.use(express.json());
 
 app.use('/',userRoutes);
 app.use('/',authRoutes);
+app.use('/',dashboardRoutes);
+
 
 
 //db connection

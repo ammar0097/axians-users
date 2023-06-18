@@ -4,7 +4,7 @@ const validator = require('validator');
 
 exports.createUser = async (req, res) => {
   try {
-    const { username, firstName, lastName, email, password, isActive, isAdmin } = req.body;
+    const { username, firstName, lastName, email, password,isNew, isActive, isAdmin } = req.body;
 
      // Validate fields
      if (!username || !firstName || !lastName || !email || !password) {
@@ -61,6 +61,7 @@ exports.createUser = async (req, res) => {
       password: hashedPassword,
       isActive,
       isAdmin,
+      isNew
     });
 
     return res.status(200).json({
@@ -74,7 +75,7 @@ exports.createUser = async (req, res) => {
 
 exports.getAllUsers = async (req, res) => {
   try {
-    const users = await db.User.findAll();
+    const users = await db.User.findAll( {attributes: { exclude: ["password"] }});
     if (!users) {
       return res.status(404).json({ message: "No users found" });
     }
@@ -89,7 +90,7 @@ exports.getAllUsers = async (req, res) => {
 
 exports.getUserById = async (req, res) => {
   try {
-    const user = await db.User.findOne({ where: { id: req.params.id } });
+    const user = await db.User.findOne({ where: { id: req.params.id },attributes: { exclude: ["password"] } });
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -111,10 +112,10 @@ exports.updateUser = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    const { username, firstName, lastName, email, password, isActive, isAdmin } = req.body;
+    const { username, firstName, lastName, email, password,isNew, isActive, isAdmin } = req.body;
 
      // Validate fields
-     if (!username || !firstName || !lastName || !email || !password) {
+     if (!username || !firstName || !lastName || !email ) {
       return res.status(400).json({ message: 'All fields are required' });
     }
 
@@ -138,46 +139,52 @@ exports.updateUser = async (req, res) => {
     if (!validator.isAlphanumeric(username)) {
       return res.status(400).json({ message: 'Username must be alphanumeric' });
     }
+    hashed = ''
+    if (password){
+  // Validate password length and complexity
+  if (password && (password.length < 12 || password.length > 20)) {
+    return res.status(400).json({ message: 'Password must be between 12 and 20 characters' });
+  }
 
-    // Validate password length and complexity
-    if (password && (password.length < 12 || password.length > 20)) {
-      return res.status(400).json({ message: 'Password must be between 12 and 20 characters' });
-    }
+  if (password && !validator.isStrongPassword(password, { minNumbers: 1, minSymbols: 1 })) {
+    return res.status(400).json({
+      message:
+        'Password must contain at least one number, one special character, and not have repeated characters in a row',
+    });
+  }
 
-    if (password && !validator.isStrongPassword(password, { minNumbers: 1, minSymbols: 1 })) {
-      return res.status(400).json({
-        message:
-          'Password must contain at least one number, one special character, and not have repeated characters in a row',
-      });
-    }
+  // Validate password contains at least one uppercase and one lowercase character
+  if (password && (!/[A-Z]/.test(password) || !/[a-z]/.test(password))) {
+    return res.status(400).json({ message: 'Password must contain at least one uppercase and one lowercase letter' });
+  }
 
-    // Validate password contains at least one uppercase and one lowercase character
-    if (password && (!/[A-Z]/.test(password) || !/[a-z]/.test(password))) {
-      return res.status(400).json({ message: 'Password must contain at least one uppercase and one lowercase letter' });
-    }
+  // Validate password doesn't have consecutive repeated characters
+  if (password && /(.)(\1)/.test(password)) {
+    return res.status(400).json({ message: 'Password cannot have consecutive repeated characters' });
+  }
+  const salt = await bcrypt.genSalt(10);
+  hashed = await bcrypt.hash(password, salt);
+}
+const updateObject = {
+  username,
+  firstName,
+  lastName,
+  email,
+  isActive,
+  isAdmin,
+  isNew
+};
 
-    // Validate password doesn't have consecutive repeated characters
-    if (password && /(.)(\1)/.test(password)) {
-      return res.status(400).json({ message: 'Password cannot have consecutive repeated characters' });
-    }
+if (hashed) {
+  updateObject.password = hashed;
+}
 
-    // Update the user
-    await db.User.update(
-      {
-        username,
-        firstName,
-        lastName,
-        email,
-        password,
-        isActive,
-        isAdmin,
-      },
-      {
-        where: {
-          id: id_params,
-        },
-      }
-    );
+// Update the user
+await db.User.update(updateObject, {
+  where: {
+    id: id_params,
+  },
+});
     return res.status(200).json({
       message: "User updated successfully",
     });

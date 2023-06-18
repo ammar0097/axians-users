@@ -1,3 +1,5 @@
+import { IsnewGuard } from './guards/isnew.guard';
+import { PasschangeComponent } from './passchange/passchange.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { AdminGuard } from './guards/admin.guard';
 import { UserListComponent } from './user-list/user-list.component';
@@ -8,8 +10,9 @@ import { AuthGuard } from './guards/auth.guard';
 
 const routes: Routes = [
   {path:"login",component:LoginComponent},
-  {path:"dashboard",component:DashboardComponent,canActivate: [AuthGuard,AdminGuard]},
-  {path:"",component:UserListComponent,canActivate: [AuthGuard]},
+  {path:"newpassword",component:PasschangeComponent},
+  {path:"dashboard",component:DashboardComponent,canActivate: [AuthGuard,IsnewGuard,AdminGuard]},
+  {path:"",component:UserListComponent,canActivate: [AuthGuard,IsnewGuard]},
 ];
 
 @NgModule({

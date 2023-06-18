@@ -12,6 +12,7 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { NavbarComponent } from './navbar/navbar.component';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { ModalModule } from 'ngx-bootstrap/modal';
+import { PasschangeComponent } from './passchange/passchange.component';
 
 @NgModule({
   declarations: [
@@ -19,7 +20,8 @@ import { ModalModule } from 'ngx-bootstrap/modal';
     LoginComponent,
     UserListComponent,
     DashboardComponent,
-    NavbarComponent
+    NavbarComponent,
+    PasschangeComponent
   ],
   imports: [
     BrowserModule,
@@ -27,7 +29,8 @@ import { ModalModule } from 'ngx-bootstrap/modal';
     HttpClientModule,
     FormsModule,
     ReactiveFormsModule,
-    ModalModule.forRoot(),
+    ModalModule.forRoot()
+    
   ],
   providers: [AuthenticationService,BsModalService,
     {provide: HTTP_INTERCEPTORS,

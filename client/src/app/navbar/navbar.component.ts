@@ -15,11 +15,13 @@ export class NavbarComponent implements OnInit {
   
   
   ngOnInit() {
-   this.getcurrentUser()
+   this.getCurrentUser()
   }
 
-  getcurrentUser(){
-    this.authService.loadCurrentUser()
+  getCurrentUser(){
+    if (this.authService.loggedIn()){
+      this.authService.loadCurrentUser()
+    }
     this.authService.currentUser$.subscribe(user => {
       this.currentUser = user;
     });
