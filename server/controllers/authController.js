@@ -18,6 +18,8 @@ exports.currentUser = async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 };
+
+
 exports.login = async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -74,9 +76,6 @@ exports.newpass = async (req, res) => {
       return res.status(400).json({ message: "Password is required" });
     }
  
-
-
-  
     hashed = ''
     if (password){
   // Validate password length and complexity
@@ -103,9 +102,6 @@ exports.newpass = async (req, res) => {
   const salt = await bcrypt.genSalt(10);
   hashed = await bcrypt.hash(password, salt);
 }
-
-
-
 
 
 // Update the user
