@@ -10,8 +10,9 @@ import { ActivatedRoute, Router } from '@angular/router';
   styleUrls: ['./login.component.css'],
 })
 export class LoginComponent implements OnInit {
-
+  loading = false;
   myForm:any
+  error_msg=''
 
   constructor(private formBuilder : FormBuilder, private authService:AuthenticationService,private router: Router,) {
     this.myForm = this.formBuilder.group({
@@ -26,13 +27,16 @@ export class LoginComponent implements OnInit {
     const username = this.myForm.get('username').value;
     const password = this.myForm.get('password').value;
   
+    this.loading = true;
     this.authService.login(username, password).subscribe(
       () => {
+        this.loading = false;
         console.log("welcome ");
-        this.router.navigate(['/home']);
+        this.router.navigate(['/']);
       },
       (error) => {
-        console.log(error.error);
+        this.error_msg = error.error.message
+        this.loading = false;
       }
     );
   }

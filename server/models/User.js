@@ -31,7 +31,12 @@ module.exports = (sequelize, DataType) => {
       type: DataType.BOOLEAN,
       allowNull: false,
       defaultValue:true
-  }
+  },
+  isNew: {
+    type: DataType.BOOLEAN,
+    allowNull: false,
+    defaultValue:true
+}
 
   });
 return User

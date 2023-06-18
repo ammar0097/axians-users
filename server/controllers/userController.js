@@ -1,27 +1,74 @@
 const db = require("../models");
 const bcrypt = require("bcrypt");
+const validator = require('validator');
 
 exports.createUser = async (req, res) => {
   try {
-    const password = req.body.password;
+    const { username, firstName, lastName, email, password, isActive, isAdmin } = req.body;
+
+     // Validate fields
+     if (!username || !firstName || !lastName || !email || !password) {
+      return res.status(400).json({ message: 'All fields are required' });
+    }
+
+    // Validate username uniqueness
+    const existingUsername = await db.User.findOne({ where: {username : username}});
+    if (existingUsername) {
+      return res.status(400).json({ message: 'Username already exists'});
+    }
+
+    // Validate email uniqueness
+    const existingEmail = await db.User.findOne({ where: {email : email}});
+    if (existingEmail) {
+      return res.status(400).json({ message: 'Email already exists' });
+    }
+
+    // Validate username alphanumeric
+    if (!validator.isAlphanumeric(username)) {
+      return res.status(400).json({ message: 'Username must be alphanumeric' });
+    }
+
+    // Validate password length and complexity
+    if (password.length < 12 || password.length > 20) {
+      return res.status(400).json({ message: 'Password must be between 12 and 20 characters' });
+    }
+
+    if (!validator.isStrongPassword(password, { minNumbers: 1, minSymbols: 1})) {
+      return res.status(400).json({
+        message:
+          'Password must contain at least one number, one special character, and not have repeated characters in a row',
+      });
+    }
+
+      // Validate password contains at least one uppercase and one lowercase character
+      if (!/[A-Z]/.test(password) || !/[a-z]/.test(password)) {
+        return res.status(400).json({ message: 'Password must contain at least one uppercase and one lowercase letter' });
+      }
+    // Validate password doesn't have consecutive repeated characters
+    if (/(.)\1/.test(password)) {
+      return res.status(400).json({ message: 'Password cannot have consecutive repeated characters' });
+    }
+
+    //  create the user
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
     const user = await db.User.create({
-      username: req.body.username,
-      firstName: req.body.firstName,
-      lastName: req.body.lastName,
-      email: req.body.email,
+      username,
+      firstName,
+      lastName,
+      email,
       password: hashedPassword,
-      isActive: req.body.isActive,
-      isAdmin: req.body.isAdmin,
+      isActive,
+      isAdmin,
     });
+
     return res.status(200).json({
       data: user,
-      message: "User created successfully",
+      message: 'User created successfully',
     });
   } catch (error) {
-    return res.status(500).json({ message: "Internal server error" });
+    return res.status(500).json({ message: 'Internal server error' });
   }
 };
 
@@ -64,15 +111,66 @@ exports.updateUser = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
+    const { username, firstName, lastName, email, password, isActive, isAdmin } = req.body;
+
+     // Validate fields
+     if (!username || !firstName || !lastName || !email || !password) {
+      return res.status(400).json({ message: 'All fields are required' });
+    }
+
+    // Validate username uniqueness
+    if (username !== user.username) {
+      const existingUsername = await db.User.findOne( { where: {username : username} });
+      if (existingUsername) {
+        return res.status(400).json({ message: 'Username already exists' });
+      }
+    }
+
+    // Validate email uniqueness
+    if (email !== user.email) {
+      const existingEmail = await db.User.findOne({ where: {email : email}  });
+      if (existingEmail) {
+        return res.status(400).json({ message: 'Email already exists' });
+      }
+    }
+
+    // Validate username alphanumeric
+    if (!validator.isAlphanumeric(username)) {
+      return res.status(400).json({ message: 'Username must be alphanumeric' });
+    }
+
+    // Validate password length and complexity
+    if (password && (password.length < 12 || password.length > 20)) {
+      return res.status(400).json({ message: 'Password must be between 12 and 20 characters' });
+    }
+
+    if (password && !validator.isStrongPassword(password, { minNumbers: 1, minSymbols: 1 })) {
+      return res.status(400).json({
+        message:
+          'Password must contain at least one number, one special character, and not have repeated characters in a row',
+      });
+    }
+
+    // Validate password contains at least one uppercase and one lowercase character
+    if (password && (!/[A-Z]/.test(password) || !/[a-z]/.test(password))) {
+      return res.status(400).json({ message: 'Password must contain at least one uppercase and one lowercase letter' });
+    }
+
+    // Validate password doesn't have consecutive repeated characters
+    if (password && /(.)(\1)/.test(password)) {
+      return res.status(400).json({ message: 'Password cannot have consecutive repeated characters' });
+    }
+
+    // Update the user
     await db.User.update(
       {
-        username: req.body.username,
-        firstName: req.body.firstName,
-        lastName: req.body.lastName,
-        email: req.body.email,
-        password: req.body.password,
-        isActive: req.body.isActive,
-        isAdmin: req.body.isAdmin,
+        username,
+        firstName,
+        lastName,
+        email,
+        password,
+        isActive,
+        isAdmin,
       },
       {
         where: {
@@ -80,7 +178,6 @@ exports.updateUser = async (req, res) => {
         },
       }
     );
-
     return res.status(200).json({
       message: "User updated successfully",
     });
@@ -88,6 +185,7 @@ exports.updateUser = async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 };
+
 
 exports.deleteUser = async (req, res) => {
   try {

@@ -1,0 +1,28 @@
+<nav class="navbar navbar-expand-lg bg-body-tertiary">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">
+      <img src="../assets/images/axians-logo.png" width="150" height="20" alt="">
+    </a>
+    <ng-container *ngIf="currentUser">
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/">Users</a>
+          </li>
+          <li *ngIf="isAdmin()" class="nav-item">
+            <a class="nav-link" routerLink="/dashboard">Dashboard</a>
+          </li>
+        </ul>
+        <ul class="navbar-nav ms-auto"> <!-- Add 'ms-auto' class to align items to the right -->
+          <li class="nav-item">
+            <button class="btn btn-outline-danger logout" (click)="logout()">Logout</button>
+          </li>
+        </ul>
+      </div>
+    </ng-container>
+  </div>
+</nav>

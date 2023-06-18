@@ -1,47 +1,61 @@
 const db = require("../models");
-const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const validator = require('validator');
+const jwt = require("jsonwebtoken");
 
+exports.currentUser = async (req, res) => {
+  try {
+    const user = await db.User.findOne({ where: { id: req.userId },  attributes: { exclude: ["password"] } });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    return res.status(200).json({
+      data: user,
+      message: "User fetched successfully",
+    });
+  } catch (error) {
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
 exports.login = async (req, res) => {
   try {
     const { username, password } = req.body;
+
+    if (!username) {
+      return res.status(400).json({ message: "Username is required" });
+    }
+
+    if (!password) {
+      return res.status(400).json({ message: "Password is required" });
+    }
+
     const user = await db.User.findOne({ where: { username: username } });
+
     if (!user) {
-      return res.status(404).json("User not found");
+      return res.status(401).json({ message: "Invalid username or password" });
     }
 
     const passwordMatch = await bcrypt.compare(password, user.password);
 
     if (!passwordMatch) {
-      // If the passwords do not match, send an error response with status code 401 Unauthorized
-      return res.status(401).json({ error: "Invalid password" });
+      return res.status(401).json({ message: "Invalid username or password" });
+    }
+    if (!user.isActive) {
+      return res.status(401).json({ message: "Account is disabled" });
     }
     const token = await jwt.sign(
       { userId: user.id, isAdmin: user.isAdmin, isActive: user.isActive },
       "testaxiansjwtjwt"
     );
-    // Send the token as a response with status code 200
-    return res
-      .status(200)
-      .json({
-        token: token,
-        username: user.username,
-        isAdmin: user.isAdmin,
-        isActive: user.isActive,
-      });
+
+    return res.status(200).json({
+      token: token,
+      username: user.username,
+      isAdmin: user.isAdmin,
+      isActive: user.isActive,
+    });
   } catch (error) {
-    return res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ message: "Internal server error" });
   }
 };
-
-/*
-exports.current = async (req, res) => {
-  try {
-    let user  = await db.User.findOne({ where:{ id : req. },attributes: {exclude: ['password']}});
-    res.json({ message: "User retrieved", result: user })
-  } catch (err) {
-    res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).send("Server Error");
-  }
-
-};
-*/
