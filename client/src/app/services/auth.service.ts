@@ -7,9 +7,12 @@ import { BehaviorSubject, Observable } from 'rxjs';
 export class AuthenticationService {
   constructor(private http: HttpClient) { }
   private urlApi = "http://localhost:3000"
+
   private currentUserSubject: BehaviorSubject<any> = new BehaviorSubject(null);
   currentUser$: Observable<any> = this.currentUserSubject.asObservable();
 
+
+  
   login(username: string, password: string) {
     return this.http.post(`${this.urlApi}/login`, { username: username, password: password }).pipe(
       map((response: any) => {
@@ -44,6 +47,7 @@ export class AuthenticationService {
     let token = localStorage.getItem('jwtToken');
     return (!!token)
   }
+  
   updatePassword(passoword:any){
     return this.http.put<any>(`${this.urlApi}/newpass`,{password:passoword}).pipe(
       map((response) => {

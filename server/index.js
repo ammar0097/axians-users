@@ -10,6 +10,8 @@ const cors = require('cors');
 
 // Enable CORS for all routes
 app.use(cors());
+
+
 // body parser qs
 app.use(express.urlencoded({extended:true}));
 

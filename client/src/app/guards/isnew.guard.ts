@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, Router } from '@angular/router';
+import { ActivatedRouteSnapshot, CanActivate, Router } from '@angular/router';
 import { AuthenticationService } from '../services/auth.service';
 import { filter, take } from 'rxjs/operators';
 
@@ -8,7 +8,7 @@ import { filter, take } from 'rxjs/operators';
 })
 export class IsnewGuard implements CanActivate {
   constructor(private router: Router, private authService: AuthenticationService) {}
-  canActivate() {
+  canActivate(route: ActivatedRouteSnapshot) {
     return new Promise<boolean>((resolve) => {
       this.authService.loadCurrentUser();
       this.authService.currentUser$
@@ -17,12 +17,24 @@ export class IsnewGuard implements CanActivate {
           take(1)
         )
         .subscribe(user => {
-          if (user.isNew === false) {
-            resolve(true);
-          } else {
-            this.router.navigate(['/newpassword']);
-            resolve(false);
+          
+          if (route && route.routeConfig && route.routeConfig.path === 'newpassword') {
+            if (user.isNew === true) {
+              resolve(true);
+            } else {
+              this.router.navigate(['/']);
+              resolve(false);
+            }
           }
+          else{
+            if (user.isNew === false) {
+              resolve(true);
+            } else {
+              this.router.navigate(['/newpassword']);
+              resolve(false);
+            }
+          }
+        
         });
     });
   }

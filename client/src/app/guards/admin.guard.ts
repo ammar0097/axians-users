@@ -6,6 +6,7 @@ import { filter, take } from 'rxjs/operators';
 @Injectable({
   providedIn: 'root'
 })
+
 export class AdminGuard implements CanActivate {
   constructor(private router: Router, private authService: AuthenticationService) {}
   canActivate() {

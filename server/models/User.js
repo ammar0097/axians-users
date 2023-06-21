@@ -37,7 +37,6 @@ module.exports = (sequelize, DataType) => {
     allowNull: false,
     defaultValue:true
 }
-
   });
 return User
 };

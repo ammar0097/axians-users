@@ -130,6 +130,8 @@
     </div>
   </ng-template>
   
+
+
   <!-- Edit user Modal -->
   <ng-template #edituser>
     <div class="modal-header">
@@ -151,9 +153,6 @@
                   <li class="msg_error" *ngIf="editUserForm.controls['username'].hasError('pattern')">Username must be alphanumeric.</li>
                 </ul>
               </div>
-              
-              
-              
             </div>
           </div>
           <div class="col">
@@ -209,13 +208,13 @@
                 <ul>
                   <li class="msg_error" *ngIf="editUserForm.controls['email'].hasError('required')">Email is required.</li>
                   <li class="msg_error" *ngIf="editUserForm.controls['email'].hasError('email')">Invalid Email.</li>
-        
-
                 </ul>
               </div>
             </div>
           </div>
-          <div class="col">
+
+
+          <div *ngIf="currentUser.id !== userToEdit.id" class="col">
             <div class="form-group">
               <label for="isAdmin">Role:</label>
               <select class="form-control" id="isAdmin" formControlName="isAdmin" required>
@@ -226,7 +225,7 @@
           </div>
         </div>
   
-        <div class="row">
+        <div *ngIf="currentUser.id !== userToEdit.id" class="row">
           <div class="col">
             <div class="form-group">
               <label for="isActive">Is Active:</label>
@@ -237,8 +236,8 @@
             </div>
           </div>
 
-          <div class="col d-flex align-items-center">
-            <div class="form-group">
+          <div *ngIf="currentUser.id !== userToEdit.id" class="col d-flex align-items-center">
+            <div  class="form-group">
               <label id="isnew" for="isNew">Ask to change password:</label>
               <input checked type="checkbox" id="isNew" formControlName="isNew">
             </div>
@@ -265,6 +264,12 @@
     </div>
   </ng-template>
   
+
+
+
+
+
+
 
 
 
